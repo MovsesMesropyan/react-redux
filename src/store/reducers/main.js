@@ -1,4 +1,4 @@
-import * as types from '../constants/actionTypes'
+import * as types from '../actions/actionTypes'
 
 const INITIAL_STATE = {
     alert: {showAlert: false, type: 'success', title: '', body: ''}

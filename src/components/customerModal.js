@@ -2,31 +2,24 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, Modal, Form, FormGroup, FormControl, ControlLabel, HelpBlock, Col } from 'react-bootstrap';
 
-import * as  CustomersActions from '../actions/customers';
+import * as  actions from '../store/actions/index';
 
-class CustomerModal extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            showModal: false,
-            action: 'create',
-            customer: {
-                id: null,
-                name: '',
-                address: '',
-                phone: ''
-            },
-            validation: {
-                nameIsPristine: true,
-                addressIsPristine: true,
-                phoneIsPristine: true
-            }
-        };
-        this.handleChange = this.handleChange.bind(this);
-        this.saveChanges = this.saveChanges.bind(this);
-        this.deleteProduct = this.deleteProduct.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-    }
+class CustomerModal extends Component {
+    state = {
+        showModal: false,
+        action: 'create',
+        customer: {
+            id: null,
+            name: '',
+            address: '',
+            phone: ''
+        },
+        validation: {
+            nameIsPristine: true,
+            addressIsPristine: true,
+            phoneIsPristine: true
+        }
+    };
 
     componentWillReceiveProps (nextProps) {
         if(nextProps.customerModal && (nextProps.customerModal.showModal !== this.props.customerModal.showModal)) {
@@ -40,38 +33,38 @@ class CustomerModal extends Component{
         }
     }
 
-    handleChange(event) {
+    handleChange = (event) => {
         let { customer, validation } = this.state;
         customer[event.target.name] = event.target.value;
         validation[event.target.name + 'IsPristine'] = false;
         this.setState({customer});
-    }
+    };
 
-    saveChanges() {
+    saveChanges = () => {
         if(this.state.customer && this.state.customer.id) {
-            this.props.editCustomer(this.state.customer);
+            this.props.onEditCustomer(this.state.customer);
         } else {
-            this.props.createCustomer(this.state.customer);
+            this.props.onCreateCustomer(this.state.customer);
         }
         this.resetValidation();
-    }
+    };
 
-    deleteProduct() {
-        this.props.deleteCustomer(this.state.customer);
-    }
+    deleteProduct = () => {
+        this.props.onDeleteCustomer(this.state.customer);
+    };
 
-    closeModal() {
-        this.props.closeCustomerModal();
+    closeModal = () => {
+        this.props.onCloseCustomerModal();
         this.resetValidation();
-    }
+    };
 
-    resetValidation() {
+    resetValidation = () => {
         let { validation } = this.state;
         validation.nameIsPristine = true;
         validation.addressIsPristine = true;
         validation.phoneIsPristine = true;
         this.setState({validation});
-    }
+    };
 
     render() {
         return (
@@ -156,4 +149,13 @@ const mapStateToProps = (state) => {
     return customers;
 };
 
-export default connect(mapStateToProps, CustomersActions )(CustomerModal)
+const mapDispatchToProps = dispatch => {
+    return {
+        onCreateCustomer: (product) => dispatch(actions.createCustomer(product)),
+        onEditCustomer: (product) => dispatch(actions.editCustomer(product)),
+        onDeleteCustomer: (product) => dispatch(actions.deleteCustomer(product)),
+        onCloseCustomerModal: () => dispatch(actions.closeCustomerModal())
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CustomerModal)

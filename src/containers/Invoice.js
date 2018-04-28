@@ -3,47 +3,38 @@ import { connect } from 'react-redux';
 import { Table, Button, Modal, Form, FormGroup, FormControl, ControlLabel, Col } from 'react-bootstrap';
 import Select from 'react-select';
 
-import * as  InvoicesActions from '../actions/invoices';
+import * as  actions from '../store/actions/index';
 
 
-class InvoiceEdit extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            mode: 'create',
-            invoiceIsSaving: false,
-            productList: {},
-            productListOption: [],
-            customerListOption: [],
-            invoice: {
-                id: null,
-                discount: 0,
-                customer_id: null,
-                total: 0
-            },
-            invoiceItems: [],
-            currentCustomer: null,
-            currentProduct: null,
-            isBlankTouched: false
-        };
-        this.customerChange = this.customerChange.bind(this);
-        this.productChange = this.productChange.bind(this);
-        this.discountChange = this.discountChange.bind(this);
-        this.addItem = this.addItem.bind(this);
-        this.changeQty = this.changeQty.bind(this);
-        this.saveInvoice = this.saveInvoice.bind(this);
-    }
+class InvoiceEdit extends Component {
+    state = {
+        mode: 'create',
+        invoiceIsSaving: false,
+        productList: {},
+        productListOption: [],
+        customerListOption: [],
+        invoice: {
+            id: null,
+            discount: 0,
+            customer_id: null,
+            total: 0
+        },
+        invoiceItems: [],
+        currentCustomer: null,
+        currentProduct: null,
+        isBlankTouched: false
+    };
 
     componentDidMount() {
         document.title = 'Invoice';
-        this.props.getInvoiceProductMeta();
-        this.props.getInvoiceCustomerMeta();
+        this.props.onGetInvoiceProductMeta();
+        this.props.onGetInvoiceCustomerMeta();
         let url = this.props.location.pathname;
 
         if(/^(\/invoices\/[a-z0-9]+\/edit)$/.test(url)) {
             this.setState({mode: 'edit'});
             let invoiceId = url.split('/')[2];
-            this.props.getInvoice(invoiceId);
+            this.props.onGetInvoice(invoiceId);
         } else {
             this.props.history.push(`/invoices/create`);
         }
@@ -79,7 +70,7 @@ class InvoiceEdit extends Component{
                             this.setState({currentCustomer: customer});
                         }
                     });
-                    this.props.getInvoiceItems(this.state.invoice.id);
+                    this.props.onGetInvoiceItems(this.state.invoice.id);
                 });
             }
             if(nextProps.invoiceItems) {
@@ -90,7 +81,7 @@ class InvoiceEdit extends Component{
         }
     }
 
-    calculateTotal() {
+    calculateTotal = () => {
         let { invoice, invoiceItems, productList } = this.state;
         let total = 0;
         let discount = parseFloat(invoice.discount);
@@ -102,27 +93,27 @@ class InvoiceEdit extends Component{
         });
         invoice.total = Math.ceil(total*(100 - discount))/100;
         this.setState({invoice})
-    }
+    };
 
-    discountChange(event) {
+    discountChange = (event) => {
         let { invoice } = this.state;
         invoice[event.target.name] = (event.target.value > 100) ? 100 : (event.target.value < 0) ? 0 : event.target.value;
         this.setState({invoice, isBlankTouched:true}, () => {
             this.calculateTotal();
         });
-    }
+    };
 
-    customerChange(val) {
+    customerChange = (val) => {
         let { invoice } = this.state;
         invoice.customer_id = val && val.value || null;
         this.setState({currentCustomer: val, invoice, isBlankTouched:true});
-    }
+    };
 
-    productChange(val) {
+    productChange = (val) => {
         this.setState({currentProduct: val});
-    }
+    };
 
-    addItem() {
+    addItem = () => {
         let { invoice, invoiceItems, currentProduct } = this.state;
         let isItemExist = false;
 
@@ -142,15 +133,15 @@ class InvoiceEdit extends Component{
         this.setState({invoiceItems, isBlankTouched: true}, () => {
             this.calculateTotal();
         });
-    }
+    };
 
     deleteItem(itemId) {
         let { invoice, invoiceItems } = this.state;
-        this.props.openInvoiceModal(invoice, itemId, invoiceItems);
+        this.props.onOpenInvoiceModal(invoice, itemId, invoiceItems);
         this.setState({isBlankTouched: true});
     }
 
-    changeQty(event) {
+    changeQty = (event) => {
         let el = event.target;
         let { invoiceItems } = this.state;
 
@@ -165,25 +156,25 @@ class InvoiceEdit extends Component{
         this.setState({invoiceItems, isBlankTouched: true}, () => {
             this.calculateTotal();
         });
-    }
+    };
 
-    saveInvoice() {
+    saveInvoice = () => {
         let {invoice, invoiceItems} = this.state;
         if(this.state.mode == 'create') {
-            this.props.createInvoice(invoice, invoiceItems).then((result) => {
+            this.props.onCreateInvoice(invoice, invoiceItems).then((result) => {
                 if (result.status === 200) {
                     this.props.history.push(`/invoices`);
                 }
             });
         } else if(this.state.mode == 'edit') {
-            this.props.editInvoice(invoice, invoiceItems)
+            this.props.onEditInvoice(invoice, invoiceItems)
             .then((result) => {
                 if (result.status === 200) {
                     this.props.history.push(`/invoices`);
                 }
             });
         }
-    }
+    };
 
     render() {
         const { invoice, invoiceItems, productList } = this.state;
@@ -320,4 +311,16 @@ const mapStateToProps = (state) => {
     return invoices;
 };
 
-export default connect(mapStateToProps, InvoicesActions )(InvoiceEdit)
+const mapDispatchToProps = dispatch => {
+    return {
+        onGetInvoiceCustomerMeta: () => dispatch(actions.getInvoiceCustomerMeta()),
+        onGetInvoiceProductMeta: () => dispatch(actions.getInvoiceProductMeta()),
+        onGetInvoice: (invoiceId) => dispatch(actions.getInvoice(invoiceId)),
+        onGetInvoiceItems: (invoiceId) => dispatch(actions.getInvoiceItems(invoiceId)),
+        onCreateInvoice: (invoice, invoiceItems) => dispatch(actions.createInvoice(invoice, invoiceItems)),
+        onEditInvoice: (invoice, invoiceItems) => dispatch(actions.editInvoice(invoice, invoiceItems)),
+        onOpenInvoiceModal: (invoice, itemId, invoiceItems) => dispatch(actions.openInvoiceModal(invoice, itemId, invoiceItems))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps )(InvoiceEdit)

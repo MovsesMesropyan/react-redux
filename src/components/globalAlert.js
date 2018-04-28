@@ -2,14 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Alert } from 'react-bootstrap';
 
-import * as  MainActions from '../actions/main';
+import * as  MainActions from '../store/actions/main';
 
 class GlobalAlert extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {};
-        this.handleAlertDismiss = this.handleAlertDismiss.bind(this);
-    }
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.alert && nextProps.alert.showAlert) {
@@ -17,9 +12,9 @@ class GlobalAlert extends Component{
         }
     }
 
-    handleAlertDismiss() {
+    handleAlertDismiss = () => {
         this.props.closeAlert();
-    }
+    };
 
     render() {
         const { alert } = this.props;

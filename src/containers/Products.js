@@ -2,22 +2,19 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
 
-import * as  ProductsActions from '../actions/products';
+import * as  actions from '../store/actions/index';
 import Spinner from './../components/spinner';
 
-class Products extends Component{
-    constructor(props) {
-        super(props);
-    }
+class Products extends Component {
 
     componentDidMount () {
         document.title = 'Product List';
-        this.props.getProductList();
+        this.props.onGetProductList();
     }
 
-    openModal(product, action) {
+    openModal = (product, action) => {
         let clonedProduct = Object.assign({}, product);
-        this.props.openProductModal(clonedProduct, action);
+        this.props.onOpenProductModal(clonedProduct, action);
     };
 
     render(){
@@ -73,4 +70,11 @@ const mapStateToProps = ({ main, products }) => {
     return {isLoading, products};
 };
 
-export default connect(mapStateToProps, ProductsActions )(Products)
+const mapDispatchToProps = dispatch => {
+    return {
+        onGetProductList: () => dispatch(actions.getProductList()),
+        onOpenProductModal: (product, action) => dispatch(actions.openProductModal(product, action))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps )(Products)

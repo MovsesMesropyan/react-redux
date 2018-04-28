@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, Modal, Form, FormGroup, FormControl, ControlLabel, HelpBlock, Col } from 'react-bootstrap';
 
-import * as  ProductsActions from '../actions/products';
+import * as  actions from '../store/actions/index';
 
-class ProductModal extends Component{
+class ProductModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +20,6 @@ class ProductModal extends Component{
                 priceIsPristine: true
             }
         };
-        this.handleChange = this.handleChange.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
         this.deleteProduct = this.deleteProduct.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -38,28 +37,28 @@ class ProductModal extends Component{
         }
     }
 
-    handleChange(event) {
+    handleChange = (event) => {
         let { product, validation } = this.state;
         product[event.target.name] = event.target.value;
         validation[event.target.name + 'IsPristine'] = false;
         this.setState({product, validation});
-    }
+    };
 
     saveChanges() {
         if(this.state.product && this.state.product.id) {
-            this.props.editProduct(this.state.product);
+            this.props.onEditProduct(this.state.product);
         } else {
-            this.props.createProduct(this.state.product);
+            this.props.onCreateProduct(this.state.product);
         }
         this.resetValidation();
     }
 
-    deleteProduct() {
-        this.props.deleteProduct(this.state.product);
-    }
+    deleteProduct = () => {
+        this.props.onDeleteProduct(this.state.product);
+    };
 
     closeModal() {
-        this.props.closeProductModal();
+        this.props.onCloseProductModal();
         this.resetValidation();
     }
 
@@ -139,4 +138,13 @@ const mapStateToProps = (state) => {
     return products;
 };
 
-export default connect(mapStateToProps, ProductsActions )(ProductModal)
+const mapDispatchToProps = dispatch => {
+    return {
+        onCreateProduct: (product) => dispatch(actions.createProduct(product)),
+        onEditProduct: (product) => dispatch(actions.editProduct(product)),
+        onDeleteProduct: (product) => dispatch(actions.deleteProduct(product)),
+        onCloseProductModal: () => dispatch(actions.closeProductModal())
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductModal)

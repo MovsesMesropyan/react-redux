@@ -2,23 +2,20 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
 
-import * as  CustomersActions from '../actions/customers';
+import * as  actions from '../store/actions/index';
 import Spinner from './../components/spinner';
 
-class Customers extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
+class Customers extends Component {
+    state = {}
 
     componentDidMount () {
         document.title = 'Customer List';
-        this.props.getCustomerList();
+        this.props.onGetCustomerList();
     }
 
     openModal(customer, action) {
         let clonedCustomer = Object.assign({}, customer);
-        this.props.openCustomerModal(clonedCustomer, action);
+        this.props.onOpenCustomerModal(clonedCustomer, action);
     }
 
     render(){
@@ -76,4 +73,11 @@ const mapStateToProps = ({ main, customers }) => {
     return {isLoading, customers};
 };
 
-export default connect(mapStateToProps, CustomersActions )(Customers)
+const mapDispatchToProps = dispatch => {
+    return {
+        onGetCustomerList: () => dispatch(actions.getCustomerList()),
+        onOpenCustomerModal: (customer, action) => dispatch(actions.openCustomerModal(customer, action))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Customers)

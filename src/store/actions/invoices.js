@@ -1,5 +1,5 @@
-import * as types from '../constants/actionTypes';
-import invoiceAppAPI from '../services/api';
+import * as types from './actionTypes';
+import invoiceAppAPI from '../../services/api';
 
 const ERROR_ALERT = {
   showAlert: true,
@@ -192,18 +192,6 @@ export const getInvoiceItems = (invoiceId) => {
         dispatch({type: types.GET_INVOICE_ITEMS, payload: response.data});
       }
     });
-  }
-};
-
-export const createInvoiceItem = (invoiceId, item) => {
-  return () => {
-    return invoiceAppAPI.createInvoiceItem(invoiceId, item)
-  }
-};
-
-export const editInvoiceItem = (invoiceId, item) => {
-  return () => {
-    return invoiceAppAPI.editInvoiceItem(invoiceId, item)
   }
 };
 

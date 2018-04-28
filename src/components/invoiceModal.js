@@ -2,20 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, Modal, Form, FormGroup, FormControl, ControlLabel, HelpBlock, Col } from 'react-bootstrap';
 
-import * as  InvoicesActions from '../actions/invoices';
+import * as  actions from '../store/actions/index';
 
 class InvoiceModal extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            showModal: false,
-            itemId: false,
-            invoice: {}
-        };
-        this.deleteInvoice = this.deleteInvoice.bind(this);
-        this.deleteInvoiceItem = this.deleteInvoiceItem.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-    }
+    state = {
+        showModal: false,
+        itemId: false,
+        invoice: {}
+    };
 
     componentWillReceiveProps (nextProps) {
         if(nextProps.invoiceModal && (nextProps.invoiceModal.showModal !== this.props.invoiceModal.showModal)) {
@@ -26,17 +20,17 @@ class InvoiceModal extends Component{
         }
     }
 
-    deleteInvoice() {
+    deleteInvoice = () => {
         this.props.deleteInvoice(this.state.invoice);
-    }
+    };
 
-    deleteInvoiceItem() {
-        this.props.deleteInvoiceItem(this.state.invoice.id, this.state.itemId, this.state.invoiceItems);
-    }
+    deleteInvoiceItem = () => {
+        this.props.onDeleteInvoiceItem(this.state.invoice.id, this.state.itemId, this.state.invoiceItems);
+    };
 
-    closeModal() {
-        this.props.closeInvoiceModal();
-    }
+    closeModal = () => {
+        this.props.onCloseInvoiceModal();
+    };
 
     render() {
         return (
@@ -65,4 +59,11 @@ const mapStateToProps = (state) => {
     return invoices;
 };
 
-export default connect(mapStateToProps, InvoicesActions )(InvoiceModal)
+const mapDispatchToProps = dispatch => {
+    return {
+        onDeleteInvoiceItem: (invoiceId, itemId, invoiceItems) => dispatch(actions.deleteInvoiceItem(invoiceId, itemId, invoiceItems)),
+        onCloseInvoiceModal: () => dispatch(actions.closeInvoiceModal())
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps )(InvoiceModal)

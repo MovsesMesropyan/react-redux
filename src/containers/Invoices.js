@@ -3,21 +3,18 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { connect } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
 
-import * as  InvoicesActions from '../actions/invoices';
+import * as  actions from '../store/actions/index';
 import Spinner from './../components/spinner';
 
-class Invoices extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            customerList: {}
-        };
-    }
+class Invoices extends Component {
+    state = {
+        customerList: {}
+    };
 
     componentDidMount () {
         document.title = 'Invoice List';
-        this.props.getInvoiceCustomerMeta();
-        this.props.getInvoiceList();
+        this.props.onGetInvoiceCustomerMeta();
+        this.props.onGetInvoiceList();
     }
 
     componentWillReceiveProps (nextProps) {
@@ -32,7 +29,7 @@ class Invoices extends Component{
     }
 
     openModal(invoice) {
-        this.props.openInvoiceModal(invoice, null);
+        this.props.onOpenInvoiceModal(invoice, null);
     }
 
     redirectTo(invoiceId) {
@@ -97,4 +94,12 @@ const mapStateToProps = ({ main, invoices }) => {
     return {isLoading, invoiceCustomerMeta, invoices};
 };
 
-export default connect(mapStateToProps, InvoicesActions )(Invoices)
+const mapDispatchToProps = dispatch => {
+    return {
+        onGetInvoiceCustomerMeta: () => dispatch(actions.getInvoiceCustomerMeta()),
+        onGetInvoiceList: () => dispatch(actions.getInvoiceList()),
+        onOpenInvoiceModal: (invoice, itemId) => dispatch(actions.openInvoiceModal(invoice, itemId))
+    }
+};
+
+export default connect( mapStateToProps, mapDispatchToProps )(Invoices);

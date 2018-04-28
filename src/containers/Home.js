@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 
-export default class Home extends Component{
-    constructor(props) {
-        super(props);
-    }
+class Home extends Component {
 
     componentDidMount () {
         document.title = 'Home';
     }
 
-    render(){
+    render() {
         return (
             <div className="container">
                 <div className="row">
@@ -21,3 +18,5 @@ export default class Home extends Component{
         )
     }
 }
+
+export default Home;

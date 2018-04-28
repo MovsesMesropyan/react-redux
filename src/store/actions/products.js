@@ -1,5 +1,5 @@
-import * as types from '../constants/actionTypes';
-import invoiceAppAPI from '../services/api';
+import * as types from './actionTypes';
+import invoiceAppAPI from '../../services/api';
 
 export const getProductList = () => {
     return (dispatch) => {
