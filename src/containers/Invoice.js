@@ -25,26 +25,28 @@ class InvoiceEdit extends Component {
         isBlankTouched: false
     };
 
-    componentDidMount() {
-        document.title = 'Invoice';
-        this.props.onGetInvoiceProductMeta();
-        this.props.onGetInvoiceCustomerMeta();
-        let url = this.props.location.pathname;
+    componentWillMount() {
+        const url = this.props.location.pathname;
 
         if(/^(\/invoices\/[a-z0-9]+\/edit)$/.test(url)) {
-            this.setState({mode: 'edit'});
-            let invoiceId = url.split('/')[2];
+            this.setState({mode: 'edit'});let invoiceId = url.split('/')[2];
             this.props.onGetInvoice(invoiceId);
         } else {
             this.props.history.push(`/invoices/create`);
         }
     }
 
-    componentWillReceiveProps (nextProps) {
-        if(nextProps.invoiceProductMeta && (nextProps.invoiceProductMeta.length != this.state.productList.length)) {
-             let loadedProductList = nextProps.invoiceProductMeta;
-             let productListOption = [];
-             let productList = {};
+    componentDidMount() {
+        document.title = 'Invoice';
+        this.props.onGetInvoiceProductMeta();
+        this.props.onGetInvoiceCustomerMeta();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.invoiceProductMeta.length != this.state.productList.length) {
+            let loadedProductList = nextProps.invoiceProductMeta;
+            let productListOption = [];
+            let productList = {};
             loadedProductList.map((product) => {
                 productListOption.push({value: product.id, label: product.name});
                 productList[product.id] = {
@@ -54,7 +56,7 @@ class InvoiceEdit extends Component {
              });
             this.setState({productList, productListOption});
         }
-        if(nextProps.invoiceCustomerMeta && (nextProps.invoiceCustomerMeta.length != this.state.productList.length)) {
+        if(nextProps.invoiceCustomerMeta.length != this.state.productList.length) {
             let customerList = nextProps.invoiceCustomerMeta;
             let customerListOption = [];
             customerList.map((customer) => {
@@ -82,7 +84,7 @@ class InvoiceEdit extends Component {
     }
 
     calculateTotal = () => {
-        let { invoice, invoiceItems, productList } = this.state;
+        let { invoice, invoiceItems, productList } = Object.assign({}, this.state);
         let total = 0;
         let discount = parseFloat(invoice.discount);
 
@@ -96,7 +98,7 @@ class InvoiceEdit extends Component {
     };
 
     discountChange = (event) => {
-        let { invoice } = this.state;
+        let { invoice } = Object.assign({}, this.state);
         invoice[event.target.name] = (event.target.value > 100) ? 100 : (event.target.value < 0) ? 0 : event.target.value;
         this.setState({invoice, isBlankTouched:true}, () => {
             this.calculateTotal();
@@ -104,7 +106,7 @@ class InvoiceEdit extends Component {
     };
 
     customerChange = (val) => {
-        let { invoice } = this.state;
+        let { invoice } = Object.assign({}, this.state);
         invoice.customer_id = val && val.value || null;
         this.setState({currentCustomer: val, invoice, isBlankTouched:true});
     };
@@ -114,7 +116,7 @@ class InvoiceEdit extends Component {
     };
 
     addItem = () => {
-        let { invoice, invoiceItems, currentProduct } = this.state;
+        let { invoice, invoiceItems, currentProduct } = Object.assign({}, this.state);
         let isItemExist = false;
 
         invoiceItems.map((item, i) => {
@@ -136,14 +138,14 @@ class InvoiceEdit extends Component {
     };
 
     deleteItem(itemId) {
-        let { invoice, invoiceItems } = this.state;
+        let { invoice, invoiceItems } = Object.assign({}, this.state);
         this.props.onOpenInvoiceModal(invoice, itemId, invoiceItems);
         this.setState({isBlankTouched: true});
     }
 
     changeQty = (event) => {
         let el = event.target;
-        let { invoiceItems } = this.state;
+        let { invoiceItems } = Object.assign({}, this.state);
 
         if(!(parseFloat(el.value)>0)) {
             el.value = 1;
@@ -159,7 +161,7 @@ class InvoiceEdit extends Component {
     };
 
     saveInvoice = () => {
-        let {invoice, invoiceItems} = this.state;
+        let {invoice, invoiceItems} = Object.assign({}, this.state);
         if(this.state.mode == 'create') {
             this.props.onCreateInvoice(invoice, invoiceItems).then((result) => {
                 if (result.status === 200) {
@@ -305,10 +307,14 @@ const styles = {
     }
 };
 
-const mapStateToProps = (state) => {
-    const {invoices} = state;
-
-    return invoices;
+const mapStateToProps = state => {
+    return {
+        invoiceCustomerMeta: state.invoices.invoiceCustomerMeta,
+        invoiceProductMeta: state.invoices.invoiceProductMeta,
+        invoice: state.invoices.invoice,
+        invoiceItems: state.invoices.invoiceItems,
+        invoices: state.invoices
+    };
 };
 
 const mapDispatchToProps = dispatch => {

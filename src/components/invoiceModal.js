@@ -4,15 +4,15 @@ import { Button, Modal, Form, FormGroup, FormControl, ControlLabel, HelpBlock, C
 
 import * as  actions from '../store/actions/index';
 
-class InvoiceModal extends Component{
+class InvoiceModal extends Component {
     state = {
         showModal: false,
         itemId: false,
         invoice: {}
     };
 
-    componentWillReceiveProps (nextProps) {
-        if(nextProps.invoiceModal && (nextProps.invoiceModal.showModal !== this.props.invoiceModal.showModal)) {
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.invoiceModal.showModal !== this.props.invoiceModal.showModal) {
             const { showModal, itemId, invoice, invoiceItems } = nextProps.invoiceModal;
             let processedInvoice = (invoice && invoice.id) ? invoice : {};
             let processedInvoiceItems = (invoice && invoice.id) ? invoiceItems : [];
@@ -21,7 +21,7 @@ class InvoiceModal extends Component{
     }
 
     deleteInvoice = () => {
-        this.props.deleteInvoice(this.state.invoice);
+        this.props.onDeleteInvoice(this.state.invoice);
     };
 
     deleteInvoiceItem = () => {
@@ -53,17 +53,18 @@ class InvoiceModal extends Component{
     }
 }
 
-const mapStateToProps = (state) => {
-    const { invoices } = state;
-
-    return invoices;
+const mapStateToProps = state => {
+    return {
+        invoiceModal: state.invoices.invoiceModal
+    };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
+        onDeleteInvoice: (invoice) => dispatch(actions.deleteInvoice(invoice)),
         onDeleteInvoiceItem: (invoiceId, itemId, invoiceItems) => dispatch(actions.deleteInvoiceItem(invoiceId, itemId, invoiceItems)),
         onCloseInvoiceModal: () => dispatch(actions.closeInvoiceModal())
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps )(InvoiceModal)
+export default connect(mapStateToProps, mapDispatchToProps)(InvoiceModal)

@@ -10,6 +10,7 @@ export {
     getInvoice,
     createInvoice,
     editInvoice,
+    deleteInvoice,
     deleteInvoiceItem,
     openInvoiceModal,
     closeInvoiceModal

@@ -7,25 +7,11 @@ import * as  actions from '../store/actions/index';
 import Spinner from './../components/spinner';
 
 class Invoices extends Component {
-    state = {
-        customerList: {}
-    };
 
     componentDidMount () {
         document.title = 'Invoice List';
         this.props.onGetInvoiceCustomerMeta();
         this.props.onGetInvoiceList();
-    }
-
-    componentWillReceiveProps (nextProps) {
-        if(nextProps.invoiceCustomerMeta && (nextProps.invoiceCustomerMeta.length != this.state.customerList.length)) {
-            let customerList = nextProps.invoiceCustomerMeta;
-            let processedCustomerList = {};
-            customerList.map((customer) => {
-                processedCustomerList[customer.id] = customer.name;
-            });
-            this.setState({customerList: processedCustomerList})
-        }
     }
 
     openModal(invoice) {
@@ -37,8 +23,15 @@ class Invoices extends Component {
     }
 
     render(){
-        const { invoicesList } = this.props.invoices || [];
-        const { customerList } = this.state;
+        const { isLoading } = this.props;
+        const { invoicesList, invoiceCustomerMeta } = this.props.invoices;
+        let customerList = {};
+
+        if(invoiceCustomerMeta.length) {
+            invoiceCustomerMeta.map((customer) => {
+                customerList[customer.id] = customer.name;
+            });
+        }
 
         return (
             <div className="container">
@@ -51,7 +44,7 @@ class Invoices extends Component {
                         <div className="clearfix"></div>
                     </div>
                     <div className="col-lg-12">
-                        { this.props.isLoading ?
+                        { isLoading ?
                         <Spinner />:
                         <Table responsive>
                             <thead>
@@ -88,10 +81,11 @@ class Invoices extends Component {
     }
 }
 
-const mapStateToProps = ({ main, invoices }) => {
-    const { isLoading } = main;
-    const { invoiceCustomerMeta } = invoices;
-    return {isLoading, invoiceCustomerMeta, invoices};
+const mapStateToProps = state => {
+    return {
+        isLoading: state.main.isLoading,
+        invoices: state.invoices
+    };
 };
 
 const mapDispatchToProps = dispatch => {
