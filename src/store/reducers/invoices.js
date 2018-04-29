@@ -14,20 +14,41 @@ const InvoicesReducer = (state = INITIAL_STATE, action = {}) => {
     switch (action.type) {
         case types.GET_INVOICE_LIST:
         case types.UPDATE_INVOICE_LIST:
-            return Object.assign({}, state, {invoicesList: action.payload});
+            return {
+                ...state,
+                invoicesList: action.payload
+            };
         case types.GET_INVOICE_PRODUCT_META:
-            return Object.assign({}, state, {invoiceProductMeta: action.payload});
+            return {
+                ...state,
+                invoiceProductMeta: action.payload
+            };
         case types.GET_INVOICE_CUSTOMER_META:
-            return Object.assign({}, state, {invoiceCustomerMeta: action.payload});
+            return {
+                ...state,
+                invoiceCustomerMeta: action.payload
+            };
         case types.GET_INVOICE:
         case types.UPDATE_INVOICE:
-            return Object.assign({}, state, {invoice: action.payload});
+            return {
+                ...state,
+                invoice: action.payload
+            };
         case types.GET_INVOICE_ITEMS:
-            return Object.assign({}, state, {invoiceItems: action.payload});
+            return {
+                ...state,
+                invoiceItems: action.payload
+            };
         case types.OPEN_INVOICE_MODAL:
-            return Object.assign({}, state, {invoiceModal: action.payload});
+            return {
+                ...state,
+                invoiceModal: action.payload
+            };
         case types.CLOSE_INVOICE_MODAL:
-            return Object.assign({}, state, {invoiceModal: action.payload});
+            return {
+                ...state,
+                invoiceModal: action.payload
+            };
         default:
             return state;
     }

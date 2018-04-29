@@ -1,4 +1,8 @@
 export {
+    closeAlert
+} from './main.js';
+
+export {
     getInvoiceCustomerMeta,
     getInvoiceProductMeta,
     getInvoiceList,

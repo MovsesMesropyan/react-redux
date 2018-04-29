@@ -21,8 +21,8 @@ class CustomerModal extends Component {
         }
     };
 
-    componentWillReceiveProps (nextProps) {
-        if(nextProps.customerModal && (nextProps.customerModal.showModal !== this.props.customerModal.showModal)) {
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.customerModal.showModal !== this.props.customerModal.showModal) {
             let { showModal, action, customer } = nextProps.customerModal;
             this.setState({showModal, action});
             if(customer && customer.id) {
@@ -34,10 +34,10 @@ class CustomerModal extends Component {
     }
 
     handleChange = (event) => {
-        let { customer, validation } = this.state;
+        let { customer, validation } = Object.assign({}, this.state);
         customer[event.target.name] = event.target.value;
         validation[event.target.name + 'IsPristine'] = false;
-        this.setState({customer});
+        this.setState({customer, validation});
     };
 
     saveChanges = () => {
@@ -59,7 +59,7 @@ class CustomerModal extends Component {
     };
 
     resetValidation = () => {
-        let { validation } = this.state;
+        let validation = Object.assign({}, this.state.validation);
         validation.nameIsPristine = true;
         validation.addressIsPristine = true;
         validation.phoneIsPristine = true;
@@ -143,10 +143,10 @@ class CustomerModal extends Component {
 }
 
 
-const mapStateToProps = (state) => {
-    const { customers } = state;
-
-    return customers;
+const mapStateToProps = state => {
+    return {
+        customerModal: state.customers.customerModal
+    };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -155,7 +155,7 @@ const mapDispatchToProps = dispatch => {
         onEditCustomer: (product) => dispatch(actions.editCustomer(product)),
         onDeleteCustomer: (product) => dispatch(actions.deleteCustomer(product)),
         onCloseCustomerModal: () => dispatch(actions.closeCustomerModal())
-    }
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CustomerModal)

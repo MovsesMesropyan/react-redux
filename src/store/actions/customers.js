@@ -6,14 +6,14 @@ export const getCustomerList = () => {
     dispatch({type: types.DATA_IS_LOADING, payload: true});
     invoiceAppAPI.getCustomerList().then((response) => {
       dispatch({type: types.DATA_IS_LOADING, payload: false});
-      if (response.status === 200 && response.data && Array.isArray(response.data)) {
-        dispatch({type: types.GET_CUSTOMER_LIST, payload: response.data})
-      } else {
+        if (response.status === 200 && response.data && Array.isArray(response.data)) {
+          dispatch({type: types.GET_CUSTOMER_LIST, payload: response.data})
+        } else {
+          dispatch({type: types.ALERT, payload: {showAlert: true, type: 'danger', title: 'Oh snap! You got an error!', body: 'Something went wrong. Please try again'}});
+        }
+      }, (error) => {
         dispatch({type: types.ALERT, payload: {showAlert: true, type: 'danger', title: 'Oh snap! You got an error!', body: 'Something went wrong. Please try again'}});
-      }
-    }, (error) => {
-      dispatch({type: types.ALERT, payload: {showAlert: true, type: 'danger', title: 'Oh snap! You got an error!', body: 'Something went wrong. Please try again'}});
-    });
+      });
   }
 };
 

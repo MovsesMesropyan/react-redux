@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Alert } from 'react-bootstrap';
 
-import * as  MainActions from '../store/actions/main';
+import * as  actions from '../store/actions/index';
 
-class GlobalAlert extends Component{
+class GlobalAlert extends Component {
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.alert && nextProps.alert.showAlert) {
+        if(nextProps.alert.showAlert) {
             setTimeout(this.handleAlertDismiss, 2000);
         }
     }
 
     handleAlertDismiss = () => {
-        this.props.closeAlert();
+        this.props.onCloseAlert();
     };
 
     render() {
@@ -33,8 +33,16 @@ class GlobalAlert extends Component{
     }
 }
 
-const mapStateToProps = (state) => {
-    return state.main;
+const mapStateToProps = state => {
+    return {
+        alert: state.main.alert
+    };
 };
 
-export default connect(mapStateToProps, MainActions )(GlobalAlert)
+const mapDispatchToProps = dispatch => {
+    return {
+        onCloseAlert: () => dispatch(actions.closeAlert())
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GlobalAlert)

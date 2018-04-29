@@ -7,13 +7,15 @@ import Spinner from './../components/spinner';
 
 class Products extends Component {
 
-    componentDidMount () {
+    componentDidMount() {
         document.title = 'Product List';
         this.props.onGetProductList();
     }
 
     openModal = (product, action) => {
-        let clonedProduct = Object.assign({}, product);
+        let clonedProduct = {
+            ...product
+        };
         this.props.onOpenProductModal(clonedProduct, action);
     };
 
@@ -64,17 +66,18 @@ class Products extends Component {
     }
 }
 
-const mapStateToProps = ({ main, products }) => {
-    const { isLoading } = main;
-
-    return {isLoading, products};
+const mapStateToProps = state => {
+    return {
+        isLoading: state.main.isLoading,
+        products: state.products
+    };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         onGetProductList: () => dispatch(actions.getProductList()),
         onOpenProductModal: (product, action) => dispatch(actions.openProductModal(product, action))
-    }
+    };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps )(Products)
+export default connect(mapStateToProps, mapDispatchToProps)(Products)

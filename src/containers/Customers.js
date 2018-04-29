@@ -6,15 +6,16 @@ import * as  actions from '../store/actions/index';
 import Spinner from './../components/spinner';
 
 class Customers extends Component {
-    state = {}
 
-    componentDidMount () {
+    componentDidMount() {
         document.title = 'Customer List';
         this.props.onGetCustomerList();
     }
 
     openModal(customer, action) {
-        let clonedCustomer = Object.assign({}, customer);
+        let clonedCustomer = {
+            ...customer
+        };
         this.props.onOpenCustomerModal(clonedCustomer, action);
     }
 
@@ -67,17 +68,18 @@ class Customers extends Component {
     }
 }
 
-const mapStateToProps = ({ main, customers }) => {
-    const { isLoading } = main;
-
-    return {isLoading, customers};
+const mapStateToProps = state => {
+    return {
+        isLoading: state.main.isLoading,
+        customers: state.customers
+    };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         onGetCustomerList: () => dispatch(actions.getCustomerList()),
         onOpenCustomerModal: (customer, action) => dispatch(actions.openCustomerModal(customer, action))
-    }
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Customers)

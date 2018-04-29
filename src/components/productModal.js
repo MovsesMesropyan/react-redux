@@ -5,28 +5,22 @@ import { Button, Modal, Form, FormGroup, FormControl, ControlLabel, HelpBlock, C
 import * as  actions from '../store/actions/index';
 
 class ProductModal extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            showModal: false,
-            action: 'create',
-            product: {
-                id: null,
-                name: '',
-                price: 0.01
-            },
-            validation: {
-                nameIsPristine: true,
-                priceIsPristine: true
-            }
-        };
-        this.saveChanges = this.saveChanges.bind(this);
-        this.deleteProduct = this.deleteProduct.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-    }
+    state = {
+        showModal: false,
+        action: 'create',
+        product: {
+            id: null,
+            name: '',
+            price: 0.01
+        },
+        validation: {
+            nameIsPristine: true,
+            priceIsPristine: true
+        }
+    };
 
-    componentWillReceiveProps (nextProps) {
-        if(nextProps.productModal && (nextProps.productModal.showModal !== this.props.productModal.showModal)) {
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.productModal.showModal !== this.props.productModal.showModal) {
             let { showModal, action, product } = nextProps.productModal;
             this.setState({showModal, action});
             if(product && product.id) {
@@ -37,33 +31,33 @@ class ProductModal extends Component {
         }
     }
 
-    handleChange = (event) => {
-        let { product, validation } = this.state;
+    handleChange = event => {
+        let { product, validation } = Object.assign({}, this.state);
         product[event.target.name] = event.target.value;
         validation[event.target.name + 'IsPristine'] = false;
         this.setState({product, validation});
     };
 
-    saveChanges() {
+    saveChanges = () => {
         if(this.state.product && this.state.product.id) {
             this.props.onEditProduct(this.state.product);
         } else {
             this.props.onCreateProduct(this.state.product);
         }
         this.resetValidation();
-    }
+    };
 
     deleteProduct = () => {
         this.props.onDeleteProduct(this.state.product);
     };
 
-    closeModal() {
+    closeModal = () => {
         this.props.onCloseProductModal();
         this.resetValidation();
-    }
+    };
 
     resetValidation() {
-        let { validation } = this.state;
+        let validation = Object.assign({}, this.state.validation);
         validation.nameIsPristine = true;
         validation.priceIsPristine = true;
         this.setState({validation});
@@ -132,10 +126,10 @@ class ProductModal extends Component {
 }
 
 
-const mapStateToProps = (state) => {
-    const { products } = state;
-
-    return products;
+const mapStateToProps = state => {
+    return {
+        productModal: state.products.productModal
+    };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -144,7 +138,7 @@ const mapDispatchToProps = dispatch => {
         onEditProduct: (product) => dispatch(actions.editProduct(product)),
         onDeleteProduct: (product) => dispatch(actions.deleteProduct(product)),
         onCloseProductModal: () => dispatch(actions.closeProductModal())
-    }
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductModal)
